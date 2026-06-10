@@ -1,3 +1,5 @@
+import { TbHotelService } from "react-icons/tb"
+
 type Props = {
   onSelect: (type: "funcionario" | "hospede") => void
 }
@@ -6,11 +8,7 @@ function ProfileSelect({ onSelect }: Props) {
   return (
     <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-8 flex flex-col items-center gap-6">
       <div className="bg-blue-600 rounded-2xl p-4">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/3242/3242257.png"
-          alt="HotelSys"
-          className="w-16 h-16 invert"
-        />
+        <TbHotelService size={64} color="#ffffff" />
       </div>
       <div className="text-center">
         <h1 className="text-2xl font-bold text-gray-800">Bem-vindo</h1>

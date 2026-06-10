@@ -1,4 +1,7 @@
 import { useState } from "react"
+import { Link } from 'react-router-dom';
+import { FaUserTie } from "react-icons/fa"
+import { MdHotel } from "react-icons/md"
 
 type Props = {
   type: "funcionario" | "hospede"
@@ -14,9 +17,7 @@ function LoginForm({ type, onBack }: Props) {
   const subtitulo = isFuncionario
     ? "Entre com seu e-mail corporativo"
     : "Entre com seu e-mail do cadastro"
-  const iconUrl = isFuncionario
-    ? "https://cdn-icons-png.flaticon.com/512/1087/1087840.png"
-    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+  const Icone = isFuncionario ? FaUserTie : MdHotel
 
   return (
     <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-8 flex flex-col items-center gap-5">
@@ -24,7 +25,7 @@ function LoginForm({ type, onBack }: Props) {
         className="rounded-full p-4"
         style={{ backgroundColor: isFuncionario ? "#FFF3E0" : "#E8F5E9" }}
       >
-        <img src={iconUrl} alt={titulo} className="w-14 h-14" />
+        <Icone size={48} color={isFuncionario ? "#F97316" : "#16A34A"} />
       </div>
       <div className="text-center">
         <h2 className="text-xl font-bold text-gray-800">{titulo}</h2>
@@ -37,8 +38,9 @@ function LoginForm({ type, onBack }: Props) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none transition"
+            className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none transition text-black"
             style={{ borderColor: isFuncionario ? "#FB923C" : "#4ADE80" }}
+            placeholder="Digite seu e-mail"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -47,7 +49,8 @@ function LoginForm({ type, onBack }: Props) {
             type="password"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none transition"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none transition text-black"
+            placeholder="Digite sua senha"
           />
           <span
             className="text-xs text-right cursor-pointer"
