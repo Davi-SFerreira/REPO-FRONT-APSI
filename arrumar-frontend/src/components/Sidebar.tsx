@@ -1,15 +1,26 @@
+import { useNavigate } from "react-router-dom"
+
+type Item = {
+  label: string
+  destaque?: boolean
+  rota?: string
+}
+
 type Props = {
   nome: string
   cargo: string
   cor: string
-  itens: { label: string; destaque?: boolean }[]
+  itens: Item[]
   rodape?: string
+  rotaRodape?: string
 }
 
-function Sidebar({ nome, cargo, cor, itens, rodape }: Props) {
+function Sidebar({ nome, cargo, cor, itens, rodape, rotaRodape }: Props) {
+  const navigate = useNavigate()
+
   return (
     <>
-      {/* Mobile: barra top */}
+      {/* Mobile */}
       <div className="md:hidden w-full px-4 py-3 flex items-center gap-3" style={{ backgroundColor: cor }}>
         <div className="w-8 h-8 rounded bg-white/20" />
         <div>
@@ -18,7 +29,7 @@ function Sidebar({ nome, cargo, cor, itens, rodape }: Props) {
         </div>
       </div>
 
-      {/* Desktop: sidebar lateral */}
+      {/* Desktop */}
       <aside className="hidden md:flex flex-col w-56 min-h-screen p-4 gap-6" style={{ backgroundColor: cor }}>
         <div className="flex items-center gap-3 mt-2">
           <div className="w-8 h-8 rounded bg-white/20" />
@@ -31,6 +42,7 @@ function Sidebar({ nome, cargo, cor, itens, rodape }: Props) {
           {itens.map((item) => (
             <button
               key={item.label}
+              onClick={() => item.rota && navigate(item.rota)}
               className={`text-left px-3 py-2 rounded-lg text-sm transition ${
                 item.destaque
                   ? "bg-white/20 text-white font-medium"
@@ -42,7 +54,10 @@ function Sidebar({ nome, cargo, cor, itens, rodape }: Props) {
           ))}
         </nav>
         {rodape && (
-          <button className="text-white/60 text-sm text-left px-3 py-2 hover:bg-white/10 rounded-lg">
+          <button
+            onClick={() => rotaRodape && navigate(rotaRodape)}
+            className="text-white/60 text-sm text-left px-3 py-2 hover:bg-white/10 rounded-lg"
+          >
             {rodape}
           </button>
         )}

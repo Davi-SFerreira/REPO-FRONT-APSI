@@ -1,42 +1,55 @@
+import { useNavigate } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
 import { TbClipboardList, TbUser, TbBrandWhatsapp } from "react-icons/tb"
-import { LiaBroomSolid } from "react-icons/lia";
+import { LiaBroomSolid } from "react-icons/lia"
+import { useAuth } from "../contexts/AuthContext"
 
 function DashboardHospede() {
+  const navigate = useNavigate()
+  const { user } = useAuth()
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
       <Sidebar
-        nome="João Silva"
+        nome={user?.nome || "Hóspede"}
         cargo="Quarto 204"
         cor="#2563EB"
         itens={[
-          { label: "Início", destaque: true },
-          { label: "Pedir Arrumação" },
-          { label: "Minhas Solicitações" },
-          { label: "Meu Perfil" },
+          { label: "Início", destaque: true, rota: "/dashboard/hospede" },
+          { label: "Pedir Arrumação", rota: "/hospede/pedir-arrumacao" },
+          { label: "Minhas Solicitações", rota: "/hospede/solicitacoes" },
+          { label: "Meu Perfil", rota: "/hospede/perfil" },
         ]}
         rodape="Falar com recepção"
       />
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-1">
-          <h1 className="text-xl font-bold text-gray-800">Olá, João! 👋</h1>
-          <div className="w-8 h-8 rounded border border-gray-200" />
+          <h1 className="text-xl font-bold text-gray-800">Olá, {user?.nome}! 👋</h1>
         </div>
         <p className="text-sm text-gray-500 mb-6">Check-out em 10/06/2026 · Quarto 204</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <div
+            onClick={() => navigate("/hospede/pedir-arrumacao")}
+            className="bg-white rounded-xl border border-gray-200 p-4 cursor-pointer hover:shadow-md transition"
+          >
             <LiaBroomSolid size={24} className="text-orange-400 mb-2" />
             <p className="font-semibold text-gray-800 text-sm">Pedir Arrumação</p>
             <p className="text-xs text-gray-400 mt-1">Solicitar limpeza do quarto</p>
           </div>
-          <div className="bg-white rounded-xl border-2 border-blue-500 p-4 relative">
+          <div
+            onClick={() => navigate("/hospede/solicitacoes")}
+            className="bg-white rounded-xl border-2 border-blue-500 p-4 relative cursor-pointer hover:shadow-md transition"
+          >
             <TbClipboardList size={24} className="text-blue-500 mb-2" />
             <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
             <p className="font-semibold text-gray-800 text-sm">Solicitações</p>
             <p className="text-xs text-gray-400 mt-1">Ver status das arrumações</p>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <div
+            onClick={() => navigate("/hospede/perfil")}
+            className="bg-white rounded-xl border border-gray-200 p-4 cursor-pointer hover:shadow-md transition"
+          >
             <TbUser size={24} className="text-green-500 mb-2" />
             <p className="font-semibold text-gray-800 text-sm">Meu Perfil</p>
             <p className="text-xs text-gray-400 mt-1">Dados da hospedagem</p>
