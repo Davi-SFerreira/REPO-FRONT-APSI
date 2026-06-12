@@ -1,13 +1,8 @@
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { TbArrowLeft, TbCheck } from "react-icons/tb"
-import { LiaBroomSolid } from "react-icons/lia";
-
-const quartosIniciais = [
-  { id: 1, numero: "101", status: "Pendente" },
-  { id: 2, numero: "102", status: "Em andamento" },
-  { id: 3, numero: "204", status: "Pendente" },
-]
+import { LiaBroomSolid } from "react-icons/lia"
+import { useQuartos } from "../../contexts/QuartosContext"
+import { useAuth } from "../../contexts/AuthContext"
 
 const statusCor: Record<string, string> = {
   "Pendente": "bg-orange-100 text-orange-700",
@@ -17,11 +12,10 @@ const statusCor: Record<string, string> = {
 
 function MeusQuartos() {
   const navigate = useNavigate()
-  const [quartos, setQuartos] = useState(quartosIniciais)
+  const { quartos, atualizarStatus } = useQuartos()
+  const { user } = useAuth()
 
-  function marcarLimpo(id: number) {
-    setQuartos(quartos.map(q => q.id === id ? { ...q, status: "Concluído" } : q))
-  }
+  const meusQuartos = quartos.filter((q) => q.camareira === user?.nome)
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -36,26 +30,30 @@ function MeusQuartos() {
             <h1 className="text-xl font-bold text-gray-800">Meus Quartos</h1>
           </div>
 
-          <div className="flex flex-col gap-3">
-            {quartos.map((q) => (
-              <div key={q.id} className="border border-gray-200 rounded-xl p-4 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-gray-800">Quarto {q.numero}</p>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium mt-1 inline-block ${statusCor[q.status]}`}>
-                    {q.status}
-                  </span>
+          {meusQuartos.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">Nenhum quarto designado para você ainda.</p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {meusQuartos.map((q) => (
+                <div key={q.numero} className="border border-gray-200 rounded-xl p-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-gray-800">Quarto {q.numero}</p>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium mt-1 inline-block ${statusCor[q.status]}`}>
+                      {q.status}
+                    </span>
+                  </div>
+                  {q.status !== "Concluído" && (
+                    <button
+                      onClick={() => atualizarStatus(q.numero, "Concluído")}
+                      className="flex items-center gap-1 px-3 py-2 rounded-lg bg-green-500 text-white text-sm hover:opacity-90 transition"
+                    >
+                      <TbCheck size={16} /> Limpo
+                    </button>
+                  )}
                 </div>
-                {q.status !== "Concluído" && (
-                  <button
-                    onClick={() => marcarLimpo(q.id)}
-                    className="flex items-center gap-1 px-3 py-2 rounded-lg bg-green-500 text-white text-sm hover:opacity-90 transition"
-                  >
-                    <TbCheck size={16} /> Limpo
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

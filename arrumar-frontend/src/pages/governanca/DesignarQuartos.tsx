@@ -1,18 +1,35 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { TbArrowLeft, TbLayoutGrid } from "react-icons/tb"
+import { designarSchema } from "../../types/schemas"
+import { useQuartos } from "../../contexts/QuartosContext"
 
 const camareiras = ["Ana Souza", "Paula Lima", "Carla Reis"]
 const quartos = ["101", "102", "103", "201", "202", "204"]
 
 function DesignarQuartos() {
   const navigate = useNavigate()
+  const { designarQuarto } = useQuartos()
   const [quarto, setQuarto] = useState("")
   const [camareira, setCamareira] = useState("")
+  const [erros, setErros] = useState<{ quarto?: string; camareira?: string }>({})
   const [designados, setDesignados] = useState<{ quarto: string; camareira: string }[]>([])
 
   function handleDesignar() {
-    if (!quarto || !camareira) return
+    const resultado = designarSchema.safeParse({ quarto, camareira })
+
+    if (!resultado.success) {
+      const novosErros: { quarto?: string; camareira?: string } = {}
+      resultado.error.issues.forEach((issue) => {
+        const campo = issue.path[0] as "quarto" | "camareira"
+        novosErros[campo] = issue.message
+      })
+      setErros(novosErros)
+      return
+    }
+
+    setErros({})
+    designarQuarto(quarto, camareira)
     setDesignados([...designados, { quarto, camareira }])
     setQuarto("")
     setCamareira("")
@@ -37,27 +54,30 @@ function DesignarQuartos() {
               <select
                 value={quarto}
                 onChange={(e) => setQuarto(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none"
+                className="border rounded-lg px-3 py-2 text-sm outline-none text-black"
+                style={{ borderColor: erros.quarto ? "#EF4444" : "#D1D5DB" }}
               >
                 <option value="">Selecione o quarto</option>
                 {quartos.map(q => <option key={q} value={q}>{q}</option>)}
               </select>
+              {erros.quarto && <span className="text-xs text-red-500">{erros.quarto}</span>}
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-sm text-gray-600">Camareira</label>
               <select
                 value={camareira}
                 onChange={(e) => setCamareira(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none"
+                className="border rounded-lg px-3 py-2 text-sm outline-none text-black"
+                style={{ borderColor: erros.camareira ? "#EF4444" : "#D1D5DB" }}
               >
                 <option value="">Selecione a camareira</option>
                 {camareiras.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
+              {erros.camareira && <span className="text-xs text-red-500">{erros.camareira}</span>}
             </div>
             <button
               onClick={handleDesignar}
-              disabled={!quarto || !camareira}
-              className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold hover:opacity-90 transition disabled:opacity-40"
+              className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold hover:opacity-90 transition"
             >
               Designar
             </button>

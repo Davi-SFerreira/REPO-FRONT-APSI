@@ -8,7 +8,15 @@ interface Props {
 }
 
 function ProtectedRoute({ children, roles }: Props) {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-400 text-sm">Carregando...</p>
+      </div>
+    )
+  }
 
   if (!user) return <Navigate to="/" />
 

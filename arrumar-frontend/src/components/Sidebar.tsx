@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../contexts/AuthContext"
 
 type Item = {
   label: string
@@ -11,12 +12,18 @@ type Props = {
   cargo: string
   cor: string
   itens: Item[]
-  rodape?: string
-  rotaRodape?: string
+  extraRodape?: string
+  rotaExtraRodape?: string
 }
 
-function Sidebar({ nome, cargo, cor, itens, rodape, rotaRodape }: Props) {
+function Sidebar({ nome, cargo, cor, itens, extraRodape, rotaExtraRodape }: Props) {
   const navigate = useNavigate()
+  const { logout } = useAuth()
+
+  function handleSair() {
+    logout()
+    navigate("/")
+  }
 
   return (
     <>
@@ -53,14 +60,23 @@ function Sidebar({ nome, cargo, cor, itens, rodape, rotaRodape }: Props) {
             </button>
           ))}
         </nav>
-        {rodape && (
+
+        <div className="flex flex-col gap-1">
+          {extraRodape && (
+            <button
+              onClick={() => rotaExtraRodape && navigate(rotaExtraRodape)}
+              className="text-white/60 text-sm text-left px-3 py-2 hover:bg-white/10 rounded-lg"
+            >
+              {extraRodape}
+            </button>
+          )}
           <button
-            onClick={() => rotaRodape && navigate(rotaRodape)}
+            onClick={handleSair}
             className="text-white/60 text-sm text-left px-3 py-2 hover:bg-white/10 rounded-lg"
           >
-            {rodape}
+            Sair
           </button>
-        )}
+        </div>
       </aside>
     </>
   )

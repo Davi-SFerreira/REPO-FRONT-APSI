@@ -3,10 +3,15 @@ import Sidebar from "../components/Sidebar"
 import { TbClipboardList, TbUser, TbBrandWhatsapp } from "react-icons/tb"
 import { LiaBroomSolid } from "react-icons/lia"
 import { useAuth } from "../contexts/AuthContext"
+import { useSolicitacoes } from "../contexts/SolicitacoesContext"
 
 function DashboardHospede() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { solicitacoes } = useSolicitacoes()
+
+  const minhas = solicitacoes.filter((s) => s.hospede === user?.nome)
+  const naoConcluidas = minhas.filter((s) => s.status !== "Concluído").length
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
@@ -20,7 +25,8 @@ function DashboardHospede() {
           { label: "Minhas Solicitações", rota: "/hospede/solicitacoes" },
           { label: "Meu Perfil", rota: "/hospede/perfil" },
         ]}
-        rodape="Falar com recepção"
+        extraRodape="Falar com recepção"
+        rotaExtraRodape="/dashboard/hospede"
       />
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-1">
@@ -42,7 +48,11 @@ function DashboardHospede() {
             className="bg-white rounded-xl border-2 border-blue-500 p-4 relative cursor-pointer hover:shadow-md transition"
           >
             <TbClipboardList size={24} className="text-blue-500 mb-2" />
-            <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+            {naoConcluidas > 0 && (
+              <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {naoConcluidas}
+              </span>
+            )}
             <p className="font-semibold text-gray-800 text-sm">Solicitações</p>
             <p className="text-xs text-gray-400 mt-1">Ver status das arrumações</p>
           </div>

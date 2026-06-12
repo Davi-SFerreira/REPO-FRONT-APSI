@@ -1,11 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { TbArrowLeft, TbClipboardList } from "react-icons/tb"
-
-const solicitacoes = [
-  { id: 1, data: "10/06/2026", hora: "09:15", status: "Concluído", obs: "Trocar roupa de cama" },
-  { id: 2, data: "10/06/2026", hora: "14:30", status: "Em andamento", obs: "Toalhas extras" },
-  { id: 3, data: "11/06/2026", hora: "08:00", status: "Pendente", obs: "Limpeza geral" },
-]
+import { useSolicitacoes } from "../../contexts/SolicitacoesContext"
+import { useAuth } from "../../contexts/AuthContext"
 
 const statusCor: Record<string, string> = {
   "Concluído": "bg-green-100 text-green-700",
@@ -15,6 +11,10 @@ const statusCor: Record<string, string> = {
 
 function MinhasSolicitacoes() {
   const navigate = useNavigate()
+  const { solicitacoes } = useSolicitacoes()
+  const { user } = useAuth()
+
+  const minhas = solicitacoes.filter((s) => s.hospede === user?.nome)
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -29,19 +29,23 @@ function MinhasSolicitacoes() {
             <h1 className="text-xl font-bold text-gray-800">Minhas Solicitações</h1>
           </div>
 
-          <div className="flex flex-col gap-3">
-            {solicitacoes.map((s) => (
-              <div key={s.id} className="border border-gray-200 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-gray-400">{s.data} às {s.hora}</p>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCor[s.status]}`}>
-                    {s.status}
-                  </span>
+          {minhas.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">Você ainda não fez nenhuma solicitação.</p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {minhas.map((s) => (
+                <div key={s.id} className="border border-gray-200 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs text-gray-400">{s.data} às {s.hora}</p>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCor[s.status]}`}>
+                      {s.status}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700">{s.observacao}</p>
                 </div>
-                <p className="text-sm text-gray-700">{s.obs}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

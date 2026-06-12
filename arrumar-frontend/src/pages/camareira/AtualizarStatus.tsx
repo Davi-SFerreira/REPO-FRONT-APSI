@@ -1,11 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { TbArrowLeft, TbCircleCheck } from "react-icons/tb"
-
-const historico = [
-  { quarto: "101", hora: "08:30", status: "Concluído" },
-  { quarto: "102", hora: "09:45", status: "Em andamento" },
-  { quarto: "204", hora: "10:00", status: "Pendente" },
-]
+import { useQuartos } from "../../contexts/QuartosContext"
+import { useAuth } from "../../contexts/AuthContext"
 
 const statusCor: Record<string, string> = {
   "Concluído": "bg-green-100 text-green-700",
@@ -15,6 +11,10 @@ const statusCor: Record<string, string> = {
 
 function AtualizarStatus() {
   const navigate = useNavigate()
+  const { quartos } = useQuartos()
+  const { user } = useAuth()
+
+  const meusQuartos = quartos.filter((q) => q.camareira === user?.nome)
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -29,19 +29,25 @@ function AtualizarStatus() {
             <h1 className="text-xl font-bold text-gray-800">Status das Limpezas</h1>
           </div>
 
-          <div className="flex flex-col gap-3">
-            {historico.map((h, i) => (
-              <div key={i} className="border border-gray-200 rounded-xl p-4 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-gray-800">Quarto {h.quarto}</p>
-                  <p className="text-xs text-gray-400 mt-1">Atualizado às {h.hora}</p>
+          {meusQuartos.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">Nenhum quarto designado para você ainda.</p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {meusQuartos.map((q) => (
+                <div key={q.numero} className="border border-gray-200 rounded-xl p-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-gray-800">Quarto {q.numero}</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {q.atualizadoEm === "-" ? "Ainda não iniciado" : `Atualizado às ${q.atualizadoEm}`}
+                    </p>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCor[q.status]}`}>
+                    {q.status}
+                  </span>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCor[h.status]}`}>
-                  {h.status}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

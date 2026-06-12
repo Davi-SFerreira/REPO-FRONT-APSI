@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { FaUserTie } from "react-icons/fa"
 import { MdHotel } from "react-icons/md"
 import type { Role } from "../types"
+import { loginSchema } from "../types/schemas"
 
 function LoginForm() {
   const { tipo } = useParams()
@@ -11,6 +12,7 @@ function LoginForm() {
   const { login } = useAuth()
   const [email, setEmail] = useState("")
   const [senha, setSenha] = useState("")
+  const [erros, setErros] = useState<{ email?: string; senha?: string }>({})
 
   const isFuncionario = tipo === "funcionario"
   const Icone = isFuncionario ? FaUserTie : MdHotel
@@ -20,16 +22,28 @@ function LoginForm() {
     : "Entre com seu e-mail do cadastro"
 
   function handleLogin() {
-    if (!email || !senha) return
+    const resultado = loginSchema.safeParse({ email, senha })
+
+    if (!resultado.success) {
+      const novosErros: { email?: string; senha?: string } = {}
+      resultado.error.issues.forEach((issue) => {
+        const campo = issue.path[0] as "email" | "senha"
+        novosErros[campo] = issue.message
+      })
+      setErros(novosErros)
+      return
+    }
+
+    setErros({})
 
     // Simulação de login por e-mail
     let role: Role = "hospede"
-    let nome = "Usuário"
+    let nome = "João"
 
     if (email.includes("camareira")) { role = "camareira"; nome = "Ana Souza" }
-    else if (email.includes("governanca")) { role = "governanca"; nome = "Maria Lima" }
-    else if (email.includes("recepcao")) { role = "recepcao"; nome = "Carlos Mendes" }
-    else if (email.includes("hospede")) { role = "hospede"; nome = "João Silva" }
+    else if (email.includes("governanca")) { role = "governanca"; nome = "Daniel" }
+    else if (email.includes("recepcao")) { role = "recepcao"; nome = "Davi" }
+    else if (email.includes("hospede")) { role = "hospede"; nome = "João " }
 
     login(role, nome)
     navigate(`/dashboard/${role}`)
@@ -53,9 +67,10 @@ function LoginForm() {
               placeholder="Digite seu e-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none transition"
-              style={{ borderColor: isFuncionario ? "#FB923C" : "#4ADE80" }}
+              className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none transition text-black"
+              style={{ borderColor: erros.email ? "#EF4444" : (isFuncionario ? "#FB923C" : "#4ADE80") }}
             />
+            {erros.email && <span className="text-xs text-red-500">{erros.email}</span>}
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-600">Senha</label>
@@ -64,8 +79,10 @@ function LoginForm() {
               placeholder="Digite sua senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none transition"
+              className="w-full border rounded-lg px-3 py-2 text-sm outline-none transition text-black"
+              style={{ borderColor: erros.senha ? "#EF4444" : "#D1D5DB" }}
             />
+            {erros.senha && <span className="text-xs text-red-500">{erros.senha}</span>}
             <span className="text-xs text-right cursor-pointer" style={{ color: isFuncionario ? "#F97316" : "#16A34A" }}>
               Esqueci minha senha
             </span>

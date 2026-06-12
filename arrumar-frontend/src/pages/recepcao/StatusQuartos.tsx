@@ -1,23 +1,16 @@
 import { useNavigate } from "react-router-dom"
 import { TbArrowLeft, TbLayoutGrid } from "react-icons/tb"
-
-const quartos = [
-  { numero: "101", status: "Ocupado", hospede: "João Silva" },
-  { numero: "102", status: "Livre", hospede: null },
-  { numero: "103", status: "Em limpeza", hospede: null },
-  { numero: "201", status: "Ocupado", hospede: "Maria Oliveira" },
-  { numero: "202", status: "Livre", hospede: null },
-  { numero: "204", status: "Ocupado", hospede: "Carlos Mendes" },
-]
+import { useQuartos } from "../../contexts/QuartosContext"
 
 const statusCor: Record<string, string> = {
-  "Ocupado": "bg-orange-100 text-orange-700",
-  "Livre": "bg-green-100 text-green-700",
-  "Em limpeza": "bg-blue-100 text-blue-700",
+  "Pendente": "bg-orange-100 text-orange-700",
+  "Em andamento": "bg-blue-100 text-blue-700",
+  "Concluído": "bg-green-100 text-green-700",
 }
 
 function StatusQuartos() {
   const navigate = useNavigate()
+  const { quartos } = useQuartos()
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -33,13 +26,13 @@ function StatusQuartos() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            {quartos.map((q, i) => (
-              <div key={i} className="border border-gray-200 rounded-xl p-4">
+            {quartos.map((q) => (
+              <div key={q.numero} className="border border-gray-200 rounded-xl p-4">
                 <p className="font-bold text-gray-800 text-lg">#{q.numero}</p>
                 <span className={`text-xs px-2 py-1 rounded-full font-medium mt-1 inline-block ${statusCor[q.status]}`}>
                   {q.status}
                 </span>
-                {q.hospede && <p className="text-xs text-gray-400 mt-2">{q.hospede}</p>}
+                <p className="text-xs text-gray-400 mt-2">{q.camareira}</p>
               </div>
             ))}
           </div>
